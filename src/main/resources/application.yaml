@@ -1,0 +1,10 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: es1.http.aegis-info.com:80
+      username: casefake
+      password: aegis2018
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true

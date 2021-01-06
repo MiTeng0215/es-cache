@@ -3,12 +3,17 @@ package com.miteng.escache.config
 import org.elasticsearch.client.RestHighLevelClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.convert.support.DefaultConversionService
 import org.springframework.data.elasticsearch.client.ClientConfiguration
 import org.springframework.data.elasticsearch.client.RestClients
+import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration
+import org.springframework.data.elasticsearch.core.ElasticsearchEntityMapper
+import org.springframework.data.elasticsearch.core.EntityMapper
+import org.springframework.http.HttpHeaders
 
 
 @Configuration
-class EsConfig {
+class EsConfig : AbstractElasticsearchConfiguration() {
 
 //    @Value("\${spring.elasticsearch.rest.uris}")
 //    private val hostAndPort: String? = null
@@ -37,11 +42,23 @@ class EsConfig {
 //    }
 
     @Bean
-    fun client(): RestHighLevelClient? {
+    fun client(): RestHighLevelClient  {
         val clientConfiguration = ClientConfiguration.builder()
                 .connectedTo("localhost:9200")
                 .build()
         return RestClients.create(clientConfiguration).rest()
+    }
+
+    override fun elasticsearchClient(): RestHighLevelClient {
+        return client()
+    }
+
+    @Bean
+    override fun entityMapper(): EntityMapper? {
+        val entityMapper = ElasticsearchEntityMapper(elasticsearchMappingContext(),
+                DefaultConversionService())
+        entityMapper.setConversions(elasticsearchCustomConversions())
+        return entityMapper
     }
 
 }

@@ -1,6 +1,7 @@
 package com.miteng.escache
 
 import com.miteng.escache.dao.CityRepo
+import com.miteng.escache.properties.EsProperties
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -31,6 +32,14 @@ class KotlinTest {
         val index = CreateIndexRequest("first")
         val create = restHighLevelClient.indices().create(index, RequestOptions.DEFAULT)
         println(create)
+    }
+
+    @Autowired
+    private lateinit var esProperties: EsProperties
+
+    @Test
+    fun test2() {
+        println(esProperties.password)
     }
 
 }

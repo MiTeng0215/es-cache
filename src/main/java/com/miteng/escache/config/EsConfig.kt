@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfig
 import org.springframework.data.elasticsearch.core.ElasticsearchEntityMapper
 import org.springframework.data.elasticsearch.core.EntityMapper
 import org.springframework.http.HttpHeaders
+import java.time.Duration
 
 
 @Configuration
@@ -44,7 +45,10 @@ class EsConfig : AbstractElasticsearchConfiguration() {
     @Bean
     fun client(): RestHighLevelClient  {
         val clientConfiguration = ClientConfiguration.builder()
-                .connectedTo("localhost:9200")
+                .connectedTo("es1.http.aegis-info.com:80", "es2.http.aegis-info.com:80", "es3.http.aegis-info.com:80")
+                .withConnectTimeout(Duration.ofSeconds(5))
+                .withSocketTimeout(Duration.ofSeconds(3))
+                .withBasicAuth("casefake", "aegis2018")
                 .build()
         return RestClients.create(clientConfiguration).rest()
     }

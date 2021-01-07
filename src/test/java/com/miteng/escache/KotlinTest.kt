@@ -1,6 +1,7 @@
 package com.miteng.escache
 
 import com.miteng.escache.dao.CityRepo
+import com.miteng.escache.dao.DocumentTagRepo
 import com.miteng.escache.properties.EsProperties
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest
 import org.elasticsearch.client.RequestOptions
@@ -8,7 +9,6 @@ import org.elasticsearch.client.RestHighLevelClient
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit4.SpringRunner
 
@@ -19,8 +19,16 @@ class KotlinTest {
     @Autowired
     private lateinit var cityRepo: CityRepo
 
+    @Autowired
+    private lateinit var documentTagRepo: DocumentTagRepo
+
     @Test
     fun unitTestingWorks() {
+        println(documentTagRepo.findAll().toList().size)
+    }
+
+    @Test
+    fun tt() {
         println(cityRepo.findAll().toList().size)
     }
 //

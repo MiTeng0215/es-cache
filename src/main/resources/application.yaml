@@ -1,7 +1,0 @@
-spring:
-  data:
-    elasticsearch:
-      address: asda,dasd,ads
-      username: dsdsd
-      password: fff
-

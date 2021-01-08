@@ -39,22 +39,14 @@ class EsConfig : AbstractElasticsearchConfiguration() {
 //        return RestClients.create(clientConfiguration).rest()
 //    }
 
-    @Bean
-    override fun entityMapper(): EntityMapper? {
-        val entityMapper = ElasticsearchEntityMapper(elasticsearchMappingContext(),
-                DefaultConversionService())
-        entityMapper.setConversions(elasticsearchCustomConversions())
-        return entityMapper
-    }
-
     override fun elasticsearchClient(): RestHighLevelClient {
         val credentialsProvider: CredentialsProvider = BasicCredentialsProvider()
         credentialsProvider.setCredentials(AuthScope.ANY, UsernamePasswordCredentials("casefake", "aegis2018"))
         val h1 = HttpHost("es1.http.aegis-info.com", 80)
-        val h2 = HttpHost("es2.http.aegis-info.com", 80)
-        val h3 = HttpHost("es3.http.aegis-info.com", 80)
+//        val h2 = HttpHost("es2.http.aegis-info.com", 80)
+//        val h3 = HttpHost("es3.http.aegis-info.com", 80)
         return RestHighLevelClient(
-                RestClient.builder(h1, h2, h3)
+                RestClient.builder(h1)
                         .setRequestConfigCallback { requestConfigBuilder ->
                             // 该方法接收一个RequestConfig.Builder对象，对该对象进行修改后然后返回。
                             requestConfigBuilder.setConnectTimeout(5000 * 1000) // 连接超时（默认为1秒）

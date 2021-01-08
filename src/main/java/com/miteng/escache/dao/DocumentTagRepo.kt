@@ -8,4 +8,5 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
  * @author SunYiBo
  * @since 0.0.1-SNAPSHOT
  */
-interface DocumentTagRepo : ElasticsearchRepository<DocumentTag, String>
+interface DocumentTagRepo : ElasticsearchRepository<DocumentTag, String> {
+}

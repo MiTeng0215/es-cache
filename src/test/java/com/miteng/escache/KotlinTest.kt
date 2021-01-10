@@ -1,8 +1,8 @@
 package com.miteng.escache
 
 import com.miteng.escache.bean.City
-import com.miteng.escache.dao.CityRepo
-import com.miteng.escache.dao.DocumentTagRepo
+import com.miteng.escache.bean.Company
+import com.miteng.escache.dao.*
 import com.miteng.escache.properties.EsProperties
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest
 import org.elasticsearch.client.RequestOptions
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.data.elasticsearch.core.ScrolledPage
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
 import org.springframework.data.elasticsearch.core.query.SearchQuery
@@ -36,12 +36,13 @@ class KotlinTest {
     fun unitTestingWorks() {
         println(documentTagRepo.findAll().toList().size)
     }
-
+//
     @Autowired
     private lateinit var elasticsearchOperations: ElasticsearchOperations
 
     @Autowired
-    private lateinit var elasticsearchTemplate: ElasticsearchTemplate
+    private lateinit var elasticsearchRestTemplate: ElasticsearchRestTemplate
+
 
     @Test
     fun ttt() {
@@ -54,7 +55,9 @@ class KotlinTest {
                 .withPageable(PageRequest.of(0, 10))
                 .build()
 
-        var scroll: ScrolledPage<City?> = elasticsearchTemplate.startScroll(1000, searchQuery, City::class.java)
+
+
+        var scroll: ScrolledPage<City?> = elasticsearchOperations.startScroll(1000, searchQuery, City::class.java)
         val scrollId = scroll.scrollId
         val cityEntities: MutableList<City> = ArrayList()
         while (scroll.hasContent()) {
@@ -63,6 +66,30 @@ class KotlinTest {
         }
 
 
+    }
+
+    @Test
+    fun tttttt() {
+        val searchQuery: SearchQuery = NativeSearchQueryBuilder()
+                .withQuery(matchAllQuery())
+                .withIndices("company")
+                .withTypes("company")
+                .withPageable(PageRequest.of(0, 10))//分页查询
+                .build()
+
+
+        //先查一页数据
+        var scroll: ScrolledPage<Company?> = elasticsearchOperations.startScroll(1000, searchQuery, Company::class.java)
+        var scrollId = scroll.getScrollId()//获取回滚id
+        val sampleEntities: MutableList<Company?> = ArrayList()
+        while (scroll.hasContent()) {//如果有数据,循环继续查询剩余数据
+            sampleEntities.addAll(scroll.content)
+            scrollId = scroll.getScrollId()
+            //1s内没有继续循环id就过期
+            scroll = elasticsearchOperations.continueScroll(scrollId, 1000, Company::class.java)//scrollTime是scrollId过去时间
+        }
+        elasticsearchOperations.clearScroll<Company>(scrollId)
+        println(sampleEntities.size)
     }
 
     @Test
@@ -83,9 +110,15 @@ class KotlinTest {
     @Autowired
     private lateinit var esProperties: EsProperties
 
+    @Autowired
+    private lateinit var companyRepo: CompanyRepo
+
+    @Autowired
+    private lateinit var scrollFindServiceImpl: ScrollFindServiceImpl
+
     @Test
     fun test2() {
-        println(esProperties.password)
+        var scrollFindAll = scrollFindServiceImpl.scrollFindAll()
     }
 
 }
